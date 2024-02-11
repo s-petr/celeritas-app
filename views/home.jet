@@ -1,0 +1,47 @@
+{{extends "./layouts/base.jet"}}
+
+{{block browserTitle()}}
+Celeritas
+{{ end }}
+
+{{block css()}}
+
+{{ end }}
+
+{{block pageContent()}}
+<div class="col text-center">
+  <div class="d-flex align-items-center justify-content-center mt-5">
+    <div>
+      <img src="/public/images/celeritas.jpg" class="mb-5" style="width: 100px; height: auto" />
+      <h1>Welcome</h1>
+      <hr />
+      <small class="text-muted">Go build something awesome</small>
+      {{if .IsAuthenticated }}
+      <p>User is authenticated</p>
+      <small><a href="/users/logout">Logout</a></small>
+      {{ end }}
+    </div>
+  </div>
+
+  <p>Things to try</p>
+
+  <div class="list-group">
+    <a href="/go-page">Render a Go template</a>
+    <a href="/jet-page">Render a Jet template</a>
+    <a href="/sessions">Try sessions</a>
+    <a href="/json">JSON Response</a>
+    <a href="/xml">XML Response</a>
+    <a href="/download">File Download Response</a>
+    <a href="/test-encrypt">Test Encryption</a>
+    <a href="/form">Form Validation</a>
+    <a href="/cache">Cache Tester</a>
+    {{if !.IsAuthenticated }}
+    <a href="/users/login">Login</a>
+    {{ end }}
+  </div>
+</div>
+{{ end }}
+
+{{block js()}}
+
+{{ end }}

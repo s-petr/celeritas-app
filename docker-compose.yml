@@ -1,0 +1,110 @@
+version: '3.8'
+
+services:
+
+  #  start Postgres, and ensure that data is stored to a mounted volume
+  postgres:
+    image: 'postgres:latest'
+    container_name: postgres
+    networks:
+      - celeritas
+    ports:
+      - "5432:5432"
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: celeritas
+    volumes:
+      - ./db-data/postgres/:/var/lib/postgresql/data/
+
+  #  start Redis, and ensure that data is stored to a mounted volume
+  redis:
+    image: 'redis:alpine'
+    container_name: redis
+    networks:
+      - celeritas
+    ports:
+      - "6379:6379"
+    restart: always
+    volumes:
+      - ./db-data/redis/:/data
+
+  #  start MariaDB, and ensure that data is stored to a mounted volume
+  mariadb:
+    image: 'mariadb:latest'
+    container_name: mariadb
+    networks:
+      - celeritas
+    ports:
+      - "3306:3306"
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: celeritas
+      MYSQL_USER: mariadb
+      MYSQL_PASSWORD: password
+    volumes:
+      - ./db-data/mariadb:/docker-entrypoint-initdb.d
+
+  #  start Adminer web app
+  adminer:
+    image: adminer:latest
+    container_name: adminer
+    networks:
+      - celeritas
+    environment:
+      ADMINER_DEFAULT_SERVER: mariadb
+    restart: always
+    ports:
+      - 7777:8080
+    depends_on:
+      - mariadb
+      - postgres
+
+  #  start sftp webdav, and admin interface; ensure that data is stored to a mounted volume
+  # username = sftp
+  # password = password
+  sftp:
+    image: 'drakkan/sftpgo:latest'
+    container_name: sftp
+    networks:
+      - celeritas
+    ports:
+      - "8080:8080"
+      - "2022:2022"
+      - "10080:10080"
+    restart: always
+    environment:
+      SFTPGO_WEBDAVD__BINDINGS__0__PORT: 10080
+      SFTPGO_DATA_PROVIDER__DRIVER: mysql
+      SFTPGO_DATA_PROVIDER__NAME: sftpgo
+      SFTPGO_DATA_PROVIDER__HOST: mariadb
+      SFTPGO_DATA_PROVIDER__PORT: 3306
+      SFTPGO_DATA_PROVIDER__USERNAME: root
+      SFTPGO_DATA_PROVIDER__PASSWORD: password
+      SFTPGO_COMMON_DEFENDER__ENABLED: false
+    volumes:
+      - ./db-data/sftp/:/mnt/data/
+      - ./db-data/home/:/var/lib/sftpgo
+
+  #  start minio, and ensure that data is stored to a mounted volume
+  minio:
+    image: 'quay.io/minio/minio'
+    container_name: minio
+    networks:
+      - celeritas
+    command: server /mnt/data --console-address ":9001"
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    restart: always
+    environment:
+      MINIO_ROOT_USER: root
+      MINIO_ROOT_PASSWORD: password
+    volumes:
+      - ./db-data/minio/:/mnt/data/
+
+networks:
+  celeritas:
+    name: celeritas

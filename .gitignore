@@ -1,0 +1,6 @@
+.env
+.air.toml
+celeritas
+tmp/
+screenshots/
+db-data/
