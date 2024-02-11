@@ -22,23 +22,6 @@ Celeritas
       {{ end }}
     </div>
   </div>
-
-  <p>Things to try</p>
-
-  <div class="list-group">
-    <a href="/go-page">Render a Go template</a>
-    <a href="/jet-page">Render a Jet template</a>
-    <a href="/sessions">Try sessions</a>
-    <a href="/json">JSON Response</a>
-    <a href="/xml">XML Response</a>
-    <a href="/download">File Download Response</a>
-    <a href="/test-encrypt">Test Encryption</a>
-    <a href="/form">Form Validation</a>
-    <a href="/cache">Cache Tester</a>
-    {{if !.IsAuthenticated }}
-    <a href="/users/login">Login</a>
-    {{ end }}
-  </div>
 </div>
 {{ end }}
 
